@@ -1,71 +1,71 @@
 # calculadora_saude.py
 
 def calcular_imc(peso, altura):
-    # Bug 1: Multiplicação em vez de potenciação no cálculo do IMC
-    imc = peso / (altura * 2)
+    # Correção Bug 1: potenciação (altura ** 2), não multiplicação por 2
+    imc = peso / (altura ** 2)
     return imc
 
 def classificar_imc(imc):
-    # Bug 2: Faixas de classificação sobrepostas e sem retorno para valores limites
+    # Correção Bug 2: faixas contínuas com >= / <=, sem sobreposição nem "buracos"
     if imc < 18.5:
         return "Abaixo do peso"
-    elif imc > 18.5 and imc < 24.9:
+    elif imc < 25.0:
         return "Peso normal"
-    elif imc > 25.0 and imc < 29.9:
+    elif imc < 30.0:
         return "Sobrepeso"
-    elif imc > 30.0:
+    else:
         return "Obesidade"
 
 def calcular_agua_diaria(peso):
-    # Bug 3: Fórmula dividindo o peso em vez de multiplicar por 35ml
-    litros = (peso / 35)
+    # Correção Bug 3: 35ml por kg de peso -> multiplicar, não dividir
+    litros = peso * 0.035
     return litros
 
 def calcular_frequencia_cardiaca_maxima(idade):
-    # Bug 4: Somando a idade em vez de subtrair de 220
-    fc_max = 220 + idade
+    # Correção Bug 4: fórmula é 220 - idade, não soma
+    fc_max = 220 - idade
     return fc_max
 
 def menu():
     print("\n" + "="*30)
-    print("  SISTEMA DE SAÚDE E BEM-ESTAR  ")
+    print(" SISTEMA DE SAÚDE E BEM-ESTAR ")
     print("="*30)
     print("1. Calcular IMC")
     print("2. Calcular Recomendação de Água")
     print("3. Calcular Frequência Cardíaca Máxima")
     print("4. Sair")
-    
-    # Bug 5: input() retorna string, mas o código não trata a conversão no menu
-    opcao = input("Escolha uma opção (1-4): ")
+    # Correção Bug 5: converte a entrada para int direto no menu,
+    # com tratamento de erro caso o usuário digite algo não numérico
+    entrada = input("Escolha uma opção (1-4): ")
+    try:
+        opcao = int(entrada)
+    except ValueError:
+        opcao = -1  # valor inválido garante que caia no "else" do main()
     return opcao
 
 def main():
     while True:
         opcao = menu()
-        
-        # Bug 6: As comparações abaixo falharão devido ao tipo de dado da 'opcao'
+
+        # Correção Bug 6: agora funciona porque 'opcao' já é int
         if opcao == 1:
             peso = float(input("Digite seu peso (kg): "))
             altura = float(input("Digite sua altura (m): "))
             imc = calcular_imc(peso, altura)
             print(f"Seu IMC é: {imc:.2f}")
             print(f"Classificação: {classificar_imc(imc)}")
-            
         elif opcao == 2:
             peso = float(input("Digite seu peso (kg): "))
             qtd_agua = calcular_agua_diaria(peso)
             print(f"Sua meta diária de água é: {qtd_agua:.2f} Litros")
-            
         elif opcao == 3:
             idade = int(input("Digite sua idade: "))
             fc = calcular_frequencia_cardiaca_maxima(idade)
             print(f"Sua Frequência Cardíaca Máxima estimada é: {fc} bpm")
-            
         elif opcao == 4:
             print("Encerrando o sistema...")
-            # Bug 7: Ausência do break para sair do loop infinito
             print("Obrigado por usar nosso sistema!")
-            
+            break  # Correção Bug 7: sai do loop infinito
         else:
             print("Opção inválida! Tente novamente.")
 
